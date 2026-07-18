@@ -74,7 +74,8 @@ certificate_covers_domain() {
   local certificate="/etc/letsencrypt/live/${DOMAIN}/fullchain.pem"
   local private_key="/etc/letsencrypt/live/${DOMAIN}/privkey.pem"
   [[ -f "${certificate}" && -f "${private_key}" ]] && \
-    openssl x509 -in "${certificate}" -noout -checkhost "${DOMAIN}" >/dev/null 2>&1
+    openssl x509 -in "${certificate}" -noout -checkhost "${DOMAIN}" 2>/dev/null | \
+      grep -Fq "does match certificate"
 }
 
 dotenv_quote() {
