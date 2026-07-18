@@ -29,7 +29,7 @@ if [[ ${EUID} -ne 0 ]]; then
   exit 1
 fi
 
-for command in git nginx certbot curl openssl ss getent systemctl install runuser flock sed cmp find awk sort grep cut mktemp rm ln bash env id; do
+for command in git nginx certbot curl openssl ss getent systemctl journalctl install runuser flock sed cmp find awk sort grep cut mktemp rm ln bash env id sleep; do
   command -v "${command}" >/dev/null 2>&1 || {
     echo "Missing command: ${command}" >&2
     exit 1
@@ -53,6 +53,28 @@ run_as_deployer() {
 
 run_shell() {
   run_as_deployer bash -lc "$1"
+}
+
+wait_for_app() {
+  local attempt
+  for attempt in {1..30}; do
+    if curl -fsS --max-time 3 "http://127.0.0.1:${PORT}/api/health" >/dev/null 2>&1; then
+      return 0
+    fi
+    sleep 1
+  done
+
+  echo "${APP_SERVICE} did not become healthy." >&2
+  systemctl --no-pager --full status "${APP_SERVICE}" >&2 || true
+  journalctl --no-pager -u "${APP_SERVICE}" -n 80 >&2 || true
+  return 1
+}
+
+certificate_covers_domain() {
+  local certificate="/etc/letsencrypt/live/${DOMAIN}/fullchain.pem"
+  local private_key="/etc/letsencrypt/live/${DOMAIN}/privkey.pem"
+  [[ -f "${certificate}" && -f "${private_key}" ]] && \
+    openssl x509 -in "${certificate}" -noout -checkhost "${DOMAIN}" >/dev/null 2>&1
 }
 
 dotenv_quote() {
@@ -173,7 +195,7 @@ deployed_sha=""
 ready=false
 if [[ "${changed}" == false && "${healthy}" == true && "${deployed_sha}" == "${current_sha}" ]] && \
    systemctl is-active --quiet "${APP_SERVICE}" && \
-   [[ -f "/etc/letsencrypt/live/${DOMAIN}/fullchain.pem" && -f "/etc/letsencrypt/live/${DOMAIN}/privkey.pem" ]] && \
+   certificate_covers_domain && \
    [[ -f "${NGINX_SITE}" ]] && cmp -s "${NGINX_TLS}" "${NGINX_SITE}"; then
   ready=true
 fi
@@ -203,7 +225,7 @@ rm -f "${temporary}"
 systemctl daemon-reload
 systemctl enable "${APP_SERVICE}"
 systemctl restart "${APP_SERVICE}"
-curl -fsS --retry 10 --retry-delay 2 "http://127.0.0.1:${PORT}/api/health" >/dev/null
+wait_for_app
 
 resolved_ips="$(getent ahostsv4 "${DOMAIN}" | awk '{print $1}' | sort -u)"
 grep -Fxq "${EXPECTED_IP}" <<< "${resolved_ips}" || {
@@ -211,14 +233,19 @@ grep -Fxq "${EXPECTED_IP}" <<< "${resolved_ips}" || {
   exit 1
 }
 
-if [[ ! -f "/etc/letsencrypt/live/${DOMAIN}/fullchain.pem" || ! -f "/etc/letsencrypt/live/${DOMAIN}/privkey.pem" ]]; then
+if ! certificate_covers_domain; then
   install -m 0644 "${NGINX_BOOTSTRAP}" "${NGINX_SITE}"
   ln -sfn "${NGINX_SITE}" "${NGINX_LINK}"
   nginx -t
   systemctl reload nginx
-  certbot certonly --nginx --domain "${DOMAIN}" --email "${CERTBOT_EMAIL}" \
-    --agree-tos --non-interactive --keep-until-expiring
+  certbot certonly --nginx --cert-name "${DOMAIN}" --domain "${DOMAIN}" \
+    --email "${CERTBOT_EMAIL}" --agree-tos --non-interactive --force-renewal
 fi
+
+certificate_covers_domain || {
+  echo "Certificate does not cover ${DOMAIN}." >&2
+  exit 1
+}
 
 install -m 0644 "${NGINX_TLS}" "${NGINX_SITE}"
 ln -sfn "${NGINX_SITE}" "${NGINX_LINK}"
