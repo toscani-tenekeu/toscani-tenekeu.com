@@ -58,7 +58,7 @@ run_shell() {
 wait_for_app() {
   local attempt
   for attempt in {1..30}; do
-    if curl -fsS --max-time 3 "http://127.0.0.1:${PORT}/api/health" >/dev/null 2>&1; then
+    if curl --noproxy '*' -fsS --max-time 3 "http://127.0.0.1:${PORT}/api/health" >/dev/null 2>&1; then
       return 0
     fi
     sleep 1
@@ -189,7 +189,7 @@ if [[ ! -f "${env_file}" ]]; then
 fi
 
 healthy=false
-curl -fsS --max-time 3 "http://127.0.0.1:${PORT}/api/health" >/dev/null 2>&1 && healthy=true
+curl --noproxy '*' -fsS --max-time 3 "http://127.0.0.1:${PORT}/api/health" >/dev/null 2>&1 && healthy=true
 deployed_sha=""
 [[ -f "${DEPLOYED_SHA_FILE}" ]] && deployed_sha="$(<"${DEPLOYED_SHA_FILE}")"
 
@@ -252,7 +252,7 @@ install -m 0644 "${NGINX_TLS}" "${NGINX_SITE}"
 ln -sfn "${NGINX_SITE}" "${NGINX_LINK}"
 nginx -t
 systemctl reload nginx
-curl -fsS --retry 5 --retry-delay 2 --resolve "${DOMAIN}:443:127.0.0.1" \
+curl --noproxy '*' -fsS --retry 5 --retry-delay 2 --resolve "${DOMAIN}:443:127.0.0.1" \
   "https://${DOMAIN}/api/health" >/dev/null
 
 install -d -m 0755 "${STATE_DIR}"
