@@ -1,0 +1,12 @@
+[Unit]
+Description=Check GitHub for toscani-tenekeu.com updates
+
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec=2min
+RandomizedDelaySec=20s
+Persistent=true
+Unit=toscani-tenekeu-com-auto-deploy.service
+
+[Install]
+WantedBy=timers.target

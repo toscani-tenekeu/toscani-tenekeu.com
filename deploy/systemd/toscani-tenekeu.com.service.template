@@ -1,0 +1,21 @@
+[Unit]
+Description=toscani-tenekeu.com application
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+User=__DEPLOY_USER__
+Group=__DEPLOY_GROUP__
+WorkingDirectory=/opt/toscani-tenekeu.com/server
+EnvironmentFile=/opt/toscani-tenekeu.com/server/.env
+ExecStart=__NODE_BIN__ index.js
+Restart=always
+RestartSec=5s
+TimeoutStopSec=15s
+KillSignal=SIGTERM
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

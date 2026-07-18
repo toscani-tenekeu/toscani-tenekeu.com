@@ -1,0 +1,10 @@
+[Unit]
+Description=Update and deploy toscani-tenekeu.com
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+EnvironmentFile=-/etc/default/toscani-tenekeu-com-auto-deploy
+ExecStart=/opt/toscani-tenekeu.com/deploy/vps-deploy.sh
+Nice=10

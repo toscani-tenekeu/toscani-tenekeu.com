@@ -1,0 +1,91 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;1,9..40,400&family=Source+Code+Pro:wght@400&display=swap');
+@import "tailwindcss";
+
+/* ── Design tokens: dark (default) ── */
+:root {
+  --bg: #171717;
+  --bg-deep: #0f0f0f;
+  --bg-card: #1c1c1c;
+  --bg-hover: #202020;
+  --border: #2e2e2e;
+  --border-lo: #242424;
+  --border-hi: #363636;
+  --fg: #fafafa;
+  --fg2: #b4b4b4;
+  --dim: #898989;
+  --tint: #1e1e1e;
+  --green: #4285F4;
+  --link: #93bbf9;
+  --error: #f87171;
+  --warning: #facc15;
+}
+
+/* ── Design tokens: light ── */
+html.light {
+  --bg: #f5f5f0;
+  --bg-deep: #eaeae4;
+  --bg-card: #ffffff;
+  --bg-hover: #e8e8e3;
+  --border: #e0e0d8;
+  --border-lo: #ebebeb;
+  --border-hi: #d4d4cc;
+  --fg: #111111;
+  --fg2: #444444;
+  --dim: #666666;
+  --tint: #f0f0eb;
+  --green: #1967d2;
+  --link: #1558b8;
+  --error: #dc2626;
+  --warning: #ca8a04;
+}
+
+/* ── Tailwind v4 theme mapping ── */
+@theme inline {
+  --color-bg:        var(--bg);
+  --color-deep:      var(--bg-deep);
+  --color-card:      var(--bg-card);
+  --color-hover:     var(--bg-hover);
+  --color-border:    var(--border);
+  --color-border-lo: var(--border-lo);
+  --color-border-hi: var(--border-hi);
+  --color-fg:        var(--fg);
+  --color-fg2:       var(--fg2);
+  --color-dim:       var(--dim);
+  --color-tint:      var(--tint);
+  --color-green:     var(--green);
+  --color-link:      var(--link);
+  --color-error:     var(--error);
+  --color-warning:   var(--warning);
+  --font-sans: 'DM Sans', 'Helvetica Neue', Arial, sans-serif;
+  --font-mono: 'Source Code Pro', 'Menlo', monospace;
+}
+
+/* ── Base ── */
+html {
+  transition: background-color 0.2s ease, color 0.2s ease;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+html, body {
+  background-color: var(--bg);
+  color: var(--fg);
+  font-family: 'DM Sans', sans-serif;
+  min-height: 100vh;
+}
+#app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* ── Card arrow — centralized hover animation ── */
+.card-arrow {
+  color: var(--dim);
+  font-size: 0.7rem;
+  flex-shrink: 0;
+  transition: transform 0.18s ease, color 0.18s ease;
+}
+.group:hover .card-arrow {
+  transform: translateX(4px);
+  color: var(--link);
+}
