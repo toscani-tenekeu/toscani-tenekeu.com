@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Toscani TENEKEU">
+  <rect width="64" height="64" rx="15" fill="#15140f"/>
+  <path d="M15 17.5c0-1.4 1.1-2.5 2.5-2.5h29c1.4 0 2.5 1.1 2.5 2.5v4c0 1.4-1.1 2.5-2.5 2.5H37v21.5c0 1.4-1.1 2.5-2.5 2.5h-5c-1.4 0-2.5-1.1-2.5-2.5V24h-9.5c-1.4 0-2.5-1.1-2.5-2.5z" fill="#f3ede1"/>
+  <path d="M23 24h4v3.2c-1.6-.4-3-1.5-4-3.2z" fill="#15140f" opacity=".18"/>
+  <rect x="40" y="40" width="9.5" height="8" rx="1.6" fill="#e0703f"/>
+</svg>
