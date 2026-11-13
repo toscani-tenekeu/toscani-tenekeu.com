@@ -56,6 +56,23 @@
   addEventListener("scroll", onScroll, { passive: true });
   onScroll();
 
+  // Footer name: rises into place as the bottom of the page comes into view.
+  const mark = document.querySelector(".foot-mark");
+  if (mark && !reduce) {
+    let raf = 0;
+    const place = () => {
+      raf = 0;
+      // measure the row above the name (it does not move), so the motion never feeds back on itself
+      const above = document.querySelector(".foot-row").getBoundingClientRect().bottom;
+      const p = Math.min(1, Math.max(0, (innerHeight - above) / (mark.offsetHeight + 48)));
+      mark.style.setProperty("--p", p.toFixed(3));
+    };
+    const ask = () => { if (!raf) raf = requestAnimationFrame(place); };
+    addEventListener("scroll", ask, { passive: true });
+    addEventListener("resize", ask);
+    place();
+  }
+
   const year = document.getElementById("year");
   if (year) year.textContent = new Date().getFullYear();
 
