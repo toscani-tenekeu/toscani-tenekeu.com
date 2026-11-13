@@ -39,6 +39,17 @@
   watch();
   setTimeout(() => document.querySelectorAll(".hero .reveal").forEach((el) => el.classList.add("in")), reduce ? 0 : 650);
 
+  // Touch screens have no hover: play the color sweep once the photo is on screen.
+  const photo = document.querySelector(".photo");
+  if (photo && !matchMedia("(hover: hover)").matches) {
+    const po = new IntersectionObserver((entries) => entries.forEach((e) => {
+      if (!e.isIntersecting) return;
+      setTimeout(() => photo.classList.add("color-on"), reduce ? 0 : 700);
+      po.disconnect();
+    }), { threshold: 0.5 });
+    po.observe(photo);
+  }
+
   // Solid header once the page scrolls.
   const top = $(".top");
   const onScroll = () => top.classList.toggle("scrolled", scrollY > 24);
