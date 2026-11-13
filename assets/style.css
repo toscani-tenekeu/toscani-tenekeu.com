@@ -135,7 +135,7 @@ main { max-width: 1240px; margin: 0 auto; }
 .foot-row { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: 16px 24px; }
 .foot-right { display: grid; justify-items: end; gap: 8px; margin-left: auto; text-align: right; }
 .foot nav { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 6px 20px; }
-.hosted { color: var(--muted); }
+.hosted { color: var(--muted); text-align: center; font-size: 13px; padding: 4px 0 28px; }
 /* large name that rises a little slower than the page as the bottom comes into view */
 .foot-mark {
   margin: 48px 0 0; padding-bottom: clamp(10px, 2vw, 24px);
