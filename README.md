@@ -15,9 +15,9 @@ Personal site of Toscani MODJOU TENEKEU. Plain HTML, CSS and JS, no build step.
 
 It then appears in the Posts section and opens at `/post.html?p=my-post`. Images can go in `posts/` too and be used as `![alt](/posts/photo.jpg)`.
 
-## Formation
+## Studies
 
-Edit the `Formation` list in `index.html`.
+Edit the `Studies` list in `index.html`.
 
 ## Deploy
 
