@@ -43,7 +43,7 @@ p { margin: 0; }
 
 /* header */
 .top {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 40;
+  position: absolute; top: 0; left: 0; right: 0; z-index: 40;
   display: flex; align-items: center; gap: 28px;
   padding: 16px var(--pad);
   pointer-events: none;
@@ -79,19 +79,17 @@ main { max-width: 1240px; margin: 0 auto; }
 
 /* photo + note */
 .me { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: clamp(28px, 6vw, 96px); align-items: center; padding: 40px 0 110px; }
-.photo {
-  margin: 0; aspect-ratio: 4 / 5; overflow: hidden;
-  /* edges dissolve into the page: no frame, no border */
-  -webkit-mask-image: linear-gradient(to right, transparent, #000 16%, #000 84%, transparent), linear-gradient(to bottom, transparent, #000 14%, #000 78%, transparent);
-  -webkit-mask-composite: source-in;
-  mask-image: linear-gradient(to right, transparent, #000 16%, #000 84%, transparent), linear-gradient(to bottom, transparent, #000 14%, #000 78%, transparent);
-  mask-composite: intersect;
-}
+.photo { position: relative; margin: 0; border-radius: 22px; overflow: hidden; aspect-ratio: 4 / 5; background: var(--raise); }
 .photo picture { display: block; height: 100%; }
-.photo img { filter: saturate(.92) contrast(1.04) brightness(.94); }
-.photo img { display: block; width: 100%; height: 100%; object-fit: cover; transform: scale(1.06); transition: transform 1.6s var(--ease); }
-.photo.in img { transform: scale(1); }
-.photo:hover img { transform: scale(1.02); }
+.photo img { display: block; width: 100%; height: 100%; object-fit: cover; }
+/* black and white underneath, color sweeps in diagonally (top-left to bottom-right) */
+.photo .bw { filter: grayscale(1) contrast(1.05) brightness(.96); }
+.photo .color {
+  position: absolute; inset: 0;
+  clip-path: polygon(0 0, 0 0, 0 0);
+  transition: clip-path 1.1s cubic-bezier(.65, 0, .35, 1);
+}
+.photo:hover .color, .photo.color-on .color { clip-path: polygon(0 0, 200% 0, 0 200%); }
 .note { margin: 0; padding: 0; border: 0; }
 .note p { font-size: clamp(26px, 3.2vw, 44px); line-height: 1.15; font-weight: 650; letter-spacing: -.03em; }
 .note p + p { margin-top: 14px; }
@@ -133,8 +131,20 @@ main { max-width: 1240px; margin: 0 auto; }
 .socials svg { width: 18px; height: 18px; fill: currentColor; flex: none; }
 .socials a:hover { transform: translateY(-3px); border-color: var(--sun); color: var(--sun); }
 
-.foot { padding-top: 60px; padding-bottom: 34px; color: var(--muted); font-size: 14px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px 24px; }
-.foot nav { display: flex; flex-wrap: wrap; gap: 6px 20px; }
+.foot { padding-top: 60px; color: var(--muted); font-size: 14px; overflow: hidden; }
+.foot-row { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: 16px 24px; }
+.foot-right { display: grid; justify-items: end; gap: 8px; margin-left: auto; text-align: right; }
+.foot nav { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 6px 20px; }
+.hosted { color: var(--muted); }
+/* large name that rises a little slower than the page as the bottom comes into view */
+.foot-mark {
+  margin: 48px 0 0; padding-bottom: clamp(10px, 2vw, 24px);
+  font-size: clamp(64px, 18.5vw, 252px); font-weight: 750; line-height: .82; letter-spacing: -.06em;
+  white-space: nowrap; color: #191a16; user-select: none;
+  transform: translateY(calc((1 - var(--p, 1)) * 38%));
+  will-change: transform;
+}
+.foot-caret { display: inline-block; width: .34em; height: .5em; margin-left: .05em; background: var(--sun); opacity: .85; border-radius: .03em; }
 .foot a { color: var(--soft); text-decoration: none; transition: color .25s; }
 .foot a:hover { color: var(--sun); }
 
@@ -180,7 +190,8 @@ main { max-width: 1240px; margin: 0 auto; }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation: none !important; transition: none !important; }
-  .reveal, .name .ch { opacity: 1 !important; transform: none !important; }
+  .reveal, .name .ch, .foot-mark { opacity: 1 !important; transform: none !important; }
 }
 .timeline li:last-child { border-bottom: 0; }
 .legal ul + p { margin-top: 14px; }
+@media (max-width: 600px) { .foot-right { justify-items: start; margin-left: 0; text-align: left; } .foot nav { justify-content: flex-start; } }

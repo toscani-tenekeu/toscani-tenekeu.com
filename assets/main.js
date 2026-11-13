@@ -39,11 +39,39 @@
   watch();
   setTimeout(() => document.querySelectorAll(".hero .reveal").forEach((el) => el.classList.add("in")), reduce ? 0 : 650);
 
+  // Touch screens have no hover: play the color sweep once the photo is on screen.
+  const photo = document.querySelector(".photo");
+  if (photo && !matchMedia("(hover: hover)").matches) {
+    const po = new IntersectionObserver((entries) => entries.forEach((e) => {
+      if (!e.isIntersecting) return;
+      setTimeout(() => photo.classList.add("color-on"), reduce ? 0 : 700);
+      po.disconnect();
+    }), { threshold: 0.5 });
+    po.observe(photo);
+  }
+
   // Solid header once the page scrolls.
   const top = $(".top");
   const onScroll = () => top.classList.toggle("scrolled", scrollY > 24);
   addEventListener("scroll", onScroll, { passive: true });
   onScroll();
+
+  // Footer name: rises into place as the bottom of the page comes into view.
+  const mark = document.querySelector(".foot-mark");
+  if (mark && !reduce) {
+    let raf = 0;
+    const place = () => {
+      raf = 0;
+      // measure the row above the name (it does not move), so the motion never feeds back on itself
+      const above = document.querySelector(".foot-row").getBoundingClientRect().bottom;
+      const p = Math.min(1, Math.max(0, (innerHeight - above) / (mark.offsetHeight + 48)));
+      mark.style.setProperty("--p", p.toFixed(3));
+    };
+    const ask = () => { if (!raf) raf = requestAnimationFrame(place); };
+    addEventListener("scroll", ask, { passive: true });
+    addEventListener("resize", ask);
+    place();
+  }
 
   const year = document.getElementById("year");
   if (year) year.textContent = new Date().getFullYear();
