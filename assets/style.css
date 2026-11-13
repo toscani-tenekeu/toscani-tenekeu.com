@@ -79,7 +79,16 @@ main { max-width: 1240px; margin: 0 auto; }
 
 /* photo + note */
 .me { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: clamp(28px, 6vw, 96px); align-items: center; padding: 40px 0 110px; }
-.photo { margin: 0; border-radius: 22px; overflow: hidden; aspect-ratio: 4 / 5; background: var(--raise); }
+.photo {
+  margin: 0; aspect-ratio: 4 / 5; overflow: hidden;
+  /* edges dissolve into the page: no frame, no border */
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 16%, #000 84%, transparent), linear-gradient(to bottom, transparent, #000 14%, #000 78%, transparent);
+  -webkit-mask-composite: source-in;
+  mask-image: linear-gradient(to right, transparent, #000 16%, #000 84%, transparent), linear-gradient(to bottom, transparent, #000 14%, #000 78%, transparent);
+  mask-composite: intersect;
+}
+.photo picture { display: block; height: 100%; }
+.photo img { filter: saturate(.92) contrast(1.04) brightness(.94); }
 .photo img { display: block; width: 100%; height: 100%; object-fit: cover; transform: scale(1.06); transition: transform 1.6s var(--ease); }
 .photo.in img { transform: scale(1); }
 .photo:hover img { transform: scale(1.02); }
